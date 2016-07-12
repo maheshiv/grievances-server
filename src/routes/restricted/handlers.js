@@ -14,7 +14,7 @@ var internals = {};
  * note: the user name is available from the credentials!
  */
 internals.restrictedArea = function (req, reply) {
-  reply({ message: req.auth.credentials.username + ', welcome to restricted area!' });
+  reply({ message: req.auth.credentials.email + ', welcome to restricted area!' });
 };
 
 module.exports = internals;

@@ -38,7 +38,7 @@ var internals = {};
  * Encrypt the password and store the user
  */
 internals.registerUser = function (req, reply) {
-  console.log('registerUser',req.payload);
+
   req.payload.password = Crypto.encrypt(req.payload.password);
   req.payload.emailVerified = false;
   var user = new User(req.payload);
@@ -48,7 +48,7 @@ internals.registerUser = function (req, reply) {
       reply(Boom.conflict(err));
     } else {
       var tokenData = {
-        username: user.username,
+        email: user.email,
         id: user._id
       };
       // send an email verification with a JWT token
@@ -61,18 +61,18 @@ internals.registerUser = function (req, reply) {
        emailVerified: false,
        password: 'd5be02df44dafbbcfb',
        email: 'barton@acclivyx.com',
-       username: 'barton',
+       fullname: 'barton',
        __v: 0 }
        */
       //Let the user know they are registered
       //Note that the token is created only with the user._id since
-      //the user can change their username & email
+      //the user can change their fullname & email
       //If the token embeds either of those fields, it becomes
       //an invalid token once the user changes those fields
       reply({
-	statusCode: 201,
-        objectId: user._id,
-	sessionToken: JwtAuth.createToken({ id: user._id})
+	       statusCode: 201,
+         objectId: user._id,
+	       sessionToken: JwtAuth.createToken({ id: user._id})
       });
     }
   });
@@ -80,12 +80,12 @@ internals.registerUser = function (req, reply) {
 /**
  * ## loginUser
  *
- * Find the user by username, verify the password matches and return
+ * Find the user by email, verify the password matches and return
  * the user
  *
  */
 internals.loginUser = function (req, reply) {
-  User.findOne({ username: req.payload.username }, function (err, user) {
+  User.findOne({ email: req.payload.email }, function (err, user) {
 
     if (err) {
       reply(Boom.unauthorized('Authentication failed'));
@@ -102,9 +102,9 @@ internals.loginUser = function (req, reply) {
       reply({
         email: user.email,
         objectId: user._id,
-        username: user.username,
+        fullname: user.fullname,
         sessionToken: JwtAuth.createToken({
-          id: user._id
+        id: user._id
         })
       });//reply
     }
@@ -138,7 +138,7 @@ internals.verifyEmail = function (req, reply) {
       return reply(Boom.forbidden("invalid verification link"));
     }
 
-    User.findUserByIdAndUserName(decoded.id, decoded.username, function(err, user){
+    User.findUserByIdAndUserName(decoded.id, function(err, user){
       //oops, something wrong
       if (err) {
         return reply(Boom.badImplementation(err));
@@ -180,11 +180,11 @@ internals.resetPasswordRequest = function (req, reply) {
     //Provide no indication if user exists
     if (user) {
       var tokenData = {
-        username: user.username,
+        email: user.email,
         id: user._id
       };
 
-      //The token will have id & username encrypted
+      //The token will have id & email encrypted
       Mailer.sendMailResetPassword(
         user,
         JasonWebToken.sign(tokenData,
@@ -228,7 +228,7 @@ internals.resetPassword = function (req, reply) {
       return reply(Boom.unauthorized('reset password allowed time has past'));
     }
 
-    User.findUserByIdAndUserName(decoded.id, decoded.username, function(err, user){
+    User.findUserByIdAndUserName(decoded.id, function(err, user){
       if (err) {
         return reply(Boom.badImplementation(err));
       }
@@ -259,7 +259,7 @@ internals.resetPassword = function (req, reply) {
 internals.getMyProfile = function (req, reply) {
   reply({
     objectId: req.auth.credentials._id,
-    username: req.auth.credentials.username,
+    fullname: req.auth.credentials.fullname,
     email: req.auth.credentials.email,
     emailVerified: req.auth.credentials.emailVerified,
     sessionToken: req.headers.authorization.split(' ')[1]
@@ -281,7 +281,7 @@ internals.updateProfile = function (req, reply) {
 
     //Provide no indication if user exists
     if (user) {
-      user.username = req.payload.username;
+      user.fullname = req.payload.fullname;
 
       //If user changed email, it needs to be verified
       if (user.email !== req.payload.email) {
@@ -298,7 +298,7 @@ internals.updateProfile = function (req, reply) {
         //Send verification email if needed
         if (!updatedUser.emailVerified) {
           var tokenData = {
-            username: user.username,
+            email: user.email,
             id: user._id
           };
           // send an email verification with a JWT token

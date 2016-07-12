@@ -22,5 +22,8 @@ module.exports = {
   validation: {
     username: /^[a-zA-Z0-9]{6,12}$/,
     password: /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,12}$/
+  },
+  anonymous: {
+    id: '576fbea6e0917294920cc0f5' //Create Anonymous user and add Id here
   }
 };

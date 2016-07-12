@@ -5,6 +5,7 @@
  *
  */
 'use strict';
+//Create one anonymous user
 /**
  * ## Imports
  *
@@ -14,11 +15,10 @@ var Mongoose = require('mongoose'),
     //The document structure definition
     Schema = Mongoose.Schema;
 
-//Same fields as Parse.com 
+//Same fields as Parse.com
 var UserSchema = new Schema({
-  username: {
+  fullname: {
     type: String,
-    unique: true,
     required: true
   },
   email: {
@@ -32,21 +32,22 @@ var UserSchema = new Schema({
   },
   emailVerified: {
     type: Boolean
+  },
+  role: {
+    type: String,
+    default: 'reporter'
   }
 });
-//Make a compound index of username/email
-UserSchema.index({ username: 1, email: 1 }, { unique: true });
+UserSchema.index({ email: 1 }, { unique: true });
 /**
  * ## findUserByIdAndUserName
  *
  * @param id - user _id from Mongodb
- * @param username - username field from Mongodb
  * @param callback - resolve the action
  *
  */
-UserSchema.statics.findUserByIdAndUserName = function(id, username, callback) {
+UserSchema.statics.findUserById = function(id, callback) {
   this.findOne({
-    username: username,
     _id: id
   }, callback);
 };
@@ -64,7 +65,7 @@ UserSchema.statics.findUserByEmail = function(email, callback) {
 };
 
 /**
- * ## Mongoose model for User 
+ * ## Mongoose model for User
  *
  * @param UserSchema - the document structure definition
  *

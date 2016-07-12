@@ -40,14 +40,14 @@ internals.endpoints = [
       description: 'Register user',
       notes: 'The user registration generates an email for verification',
       validate: {
-	payload: {
-          //username required with same regex as client
-	  username: Joi.string().regex(CONFIG.validation.username).required(),
-          //password required with same regex as client          
-	  password: Joi.string().regex(CONFIG.validation.password).required(),
-          //email required
-	  email: Joi.string().email().required()
-	}
+      	payload: {
+                //fullname required with same regex as client
+      	  fullname: Joi.string().required(),
+                //password required with same regex as client
+      	  password: Joi.string().regex(CONFIG.validation.password).required(),
+                //email required
+      	  email: Joi.string().email().required()
+      	}
       }
     }
   },
@@ -62,8 +62,8 @@ internals.endpoints = [
       notes: 'The user login will return a sessionToken',
       validate: {
 	payload: {
-          //username required with same regex as client          
-	  username: Joi.string().regex(CONFIG.validation.username).required(),
+          //fullname required with same regex as client
+	  fullname: Joi.string().required(),
           //password required with same regex as client
 	  password: Joi.string().regex(CONFIG.validation.password).required()
 	}
@@ -84,7 +84,7 @@ internals.endpoints = [
       validate: {
         headers: Joi.object({
           'Authorization': Joi.string()
-        }).unknown()      
+        }).unknown()
       }
     }
   },
@@ -114,16 +114,16 @@ internals.endpoints = [
       description: 'User requests to reset password',
       notes: 'Email is sent to email address provided',
       validate: {
-	payload: {
-          //email required
-	  email: Joi.string().email().required()          
-	}
-      }      
+      	payload: {
+                //email required
+      	  email: Joi.string().email().required()
+      	}
+      }
 
     }
   },
   {
-    //send html w/ password reset form    
+    //send html w/ password reset form
     method: 'GET',
     path: '/account/resetPassword/{token}',
     handler: AccountHandlers.displayResetPassword
@@ -138,15 +138,15 @@ internals.endpoints = [
       description: 'User posts new password',
       notes: 'Password form posts new password',
       validate: {
-	payload: {
-          //password required with same regex as client          
-	  password: Joi.string().regex(CONFIG.validation.password).required(),
-          //email required
-	  token: Joi.string().required()          
-	}
-      }      
+      	payload: {
+                //password required with same regex as client
+      	  password: Joi.string().regex(CONFIG.validation.password).required(),
+                //email required
+      	  token: Joi.string().required()
+      	}
+      }
 
-    }    
+    }
   },
   {
     method: 'GET',
@@ -156,12 +156,12 @@ internals.endpoints = [
       auth: 'token',
       tags: ['api'],
       description: 'Get the current users profile',
-      notes: 'The user has username, email and emailVerified',      
+      notes: 'The user has fullname, email and emailVerified',
       validate: {
         headers: Joi.object({
           'Authorization': Joi.string()
-        }).unknown()      
-      }      
+        }).unknown()
+      }
     }
   },
   {
@@ -172,21 +172,21 @@ internals.endpoints = [
       auth: 'token',
       tags: ['api'],
       description: 'Update user profile',
-      notes: 'User is able to change their username and email',
+      notes: 'User is able to change their fullname and email',
       validate: {
         payload: {
-          //email required          
-	  email: Joi.string().email().required(),
-          //username required          
-	  username: Joi.string().regex(CONFIG.validation.username).required()
-	},
+          //email required
+      	  email: Joi.string().email().required(),
+                //fullname required
+      	  fullname: Joi.string().required()
+      	},
         params: {
           _id: Joi.string().required()
-        },        
+        },
         headers: Joi.object({
           'Authorization': Joi.string()
-        }).unknown()      
-      }      
+        }).unknown()
+      }
     }
   },
 
