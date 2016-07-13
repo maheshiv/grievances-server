@@ -90,7 +90,7 @@ internals.loginUser = function (req, reply) {
     if (err) {
       reply(Boom.unauthorized('Authentication failed'));
     }
-
+    
     if (_.isNull(user)) {
       reply(Boom.unauthorized('Authentication failed'));
     }

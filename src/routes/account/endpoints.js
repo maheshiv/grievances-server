@@ -62,8 +62,8 @@ internals.endpoints = [
       notes: 'The user login will return a sessionToken',
       validate: {
 	payload: {
-          //fullname required with same regex as client
-	  fullname: Joi.string().required(),
+          //email required with same regex as client
+	  email: Joi.string().required(),
           //password required with same regex as client
 	  password: Joi.string().regex(CONFIG.validation.password).required()
 	}
