@@ -30,6 +30,7 @@ var internals = {};
  *
  * Note account/register has same Regex expression as Snowflake client
  */
+ 
 internals.endpoints = [
   {
     method: 'POST',

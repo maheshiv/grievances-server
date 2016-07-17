@@ -17,14 +17,14 @@ var Mongoose = require('mongoose'),
 //Same fields as Parse.com
 var GrievanceSchema = new Schema({
   address: String,
-  location: {type: [Number], index: '2dsphere'/*, required: true*/},
-  reportedUser: { type: Schema.ObjectId, ref: 'User'}, //Either anonymous-id or user-id
+  location: {type: [Number], index: '2dsphere', required: true},
+  reportedUser: {type: Schema.ObjectId, ref: 'User'}, //Either anonymous-id or user-id
   description: String,
   dateOfReporting: { type: Date, default: Date.now },
   dateOfResolving: Date,
   resolvedUser: { type: Schema.ObjectId, ref: 'User' },
   status: {type: String, default: 'new'},
-  tag: {type: String, index: true/*, required: true*/}
+  tag: {type: String, index: true, required: true}
 });
 
 /**
