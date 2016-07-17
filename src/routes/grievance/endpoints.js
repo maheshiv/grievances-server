@@ -54,7 +54,7 @@ internals.endpoints = [
     }
   },
   {
-    method: 'POST',
+    method: 'DELETE',
     path: '/grievance/delete/{_id}',
     handler: GrievanceHandlers.deleteGrievance,
     config: {
@@ -104,7 +104,7 @@ internals.endpoints = [
     }
   },
   {
-    method: 'POST',
+    method: 'PUT',
     path: '/grievance/report/{_id}',
     handler: GrievanceHandlers.updateGrievance,
     config: {
