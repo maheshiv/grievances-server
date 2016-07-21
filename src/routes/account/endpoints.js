@@ -44,7 +44,7 @@ internals.endpoints = [
                 //fullname required with same regex as client
       	  fullname: Joi.string().required(),
                 //password required with same regex as client
-      	  password: Joi.string().regex(CONFIG.validation.password).required(),
+      	  password: Joi.string()/*.regex(CONFIG.validation.password)*/.required(),
                 //email required
       	  email: Joi.string().email().required()
       	}
@@ -65,7 +65,7 @@ internals.endpoints = [
           //email required with same regex as client
 	  email: Joi.string().required(),
           //password required with same regex as client
-	  password: Joi.string().regex(CONFIG.validation.password).required()
+	  password: Joi.string()/*.regex(CONFIG.validation.password)*/.required()
 	}
       }
     }
@@ -140,7 +140,7 @@ internals.endpoints = [
       validate: {
       	payload: {
                 //password required with same regex as client
-      	  password: Joi.string().regex(CONFIG.validation.password).required(),
+      	  password: Joi.string()/*.regex(CONFIG.validation.password)*/.required(),
                 //email required
       	  token: Joi.string().required()
       	}
