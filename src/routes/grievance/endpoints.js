@@ -30,7 +30,7 @@ var internals = {};
  *
  * Note account/register has same Regex expression as Snowflake client
  */
- 
+
 internals.endpoints = [
   {
     method: 'POST',
@@ -100,7 +100,11 @@ internals.endpoints = [
       validate: {
         headers: Joi.object({
           'Authorization': Joi.string()
-        }).unknown()
+        }).unknown(),
+        query: {
+          location: Joi.array().required(),
+          radius: Joi.number().required().min(10)
+        }
       }
     }
   },

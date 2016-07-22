@@ -86,7 +86,7 @@ internals.getMyGrievance = function (req, reply) {
  *
  */
 internals.getAllGrievancesForUser = function (req, reply) {
-  Grievance.find({reportedUser: req.auth.credentials._id}, function(err, grievances) {
+  Grievance.find({location: {$geoWithin: {$center: [req.query.location, req.query.radius]}}}, function(err, grievances) {
     if (err) {
       return reply(Boom.badImplementation(err));
     }
