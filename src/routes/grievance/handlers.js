@@ -74,8 +74,8 @@ internals.reportGrievance = function (req, reply) {
     writeLargeStream = fs.createWriteStream(curlPath + '-lg.jpg');
 
     //create small and large url and upload to uploads folder and save only the path excluding small and large string
-    gm(imageBuffer.data).resize('50', '50').stream().pipe(writeSmallStream);
-    gm(imageBuffer.data).resize('200', '200').stream().pipe(writeLargeStream);
+    gm(imageBuffer.data).resize('100', '100').stream().pipe(writeSmallStream);
+    gm(imageBuffer.data).resize('300', '300').stream().pipe(writeLargeStream);
 
     req.payload.curlyUrl = CONFIG.uploadPath + momentTime + '.jpg';
   }
