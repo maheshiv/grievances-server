@@ -34,7 +34,7 @@ internals.server = new Hapi.Server({
   connections: {
     routes: {
       files: {
-        relativeTo: path.join(__dirname, 'public')
+        relativeTo: path.join(__dirname, '../../public')
       }
     }
   }

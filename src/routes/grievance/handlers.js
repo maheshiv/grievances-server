@@ -46,7 +46,9 @@ internals.reportGrievance = function (req, reply) {
     imageBuffer,
     curlPath,
     momentTime = crypto.createHash('md5').update(moment().unix()+':'+Math.random()).digest("hex"),
-    data;
+    data,
+    writeSmallStream,
+    writeLargeStream;
 
   if (req.payload.curlyUrl) {
     data = req.payload.curlyUrl.uri;
@@ -67,16 +69,14 @@ internals.reportGrievance = function (req, reply) {
 
     imageBuffer = decodeBase64Image(data);
 
-    curlPath = path.join(__dirname, 'public', CONFIG.uploadPath, momentTime);
+    curlPath = path.join(__dirname, '../../../public', CONFIG.uploadPath, momentTime);
+    writeSmallStream = fs.createWriteStream(curlPath + '-sm.jpg');
+    writeLargeStream = fs.createWriteStream(curlPath + '-lg.jpg');
+
     //create small and large url and upload to uploads folder and save only the path excluding small and large string
-    gm(imageBuffer.data).resize(50, 50).write(curlPath + '-sm.jpg', function(err, data) {
-      console.log('cool small error', err);
-      if (!err) console.log('small image done');
-    });
-    gm(imageBuffer.data).resize(300, 300).write(curlPath + '-lg.jpg', function(err, data) {
-      console.log('cool large error', err);
-      if (!err) console.log('large image done');
-    });
+    gm(imageBuffer.data).resize('50', '50').stream().pipe(writeSmallStream);
+    gm(imageBuffer.data).resize('200', '200').stream().pipe(writeLargeStream);
+
     req.payload.curlyUrl = CONFIG.uploadPath + momentTime + '.jpg';
   }
   grievance = new Grievance(req.payload);
@@ -137,12 +137,14 @@ internals.getMyGrievance = function (req, reply) {
 internals.getAllGrievancesForUser = function (req, reply) {
   Grievance.find({
     location: {$geoWithin: {$center: [req.query.location, req.query.radius]}}
-  }).lean().exec(function(err, grievances) {
+  }).exec(function(err, grievances) {
     if (err) {
       return reply(Boom.badImplementation(err));
     }
+
     async.map(grievances, function(grievance, callback) {
       var upVoted;
+      grievance = grievance.toObject();
       grievance.upVotedCount = grievance.moreReportedUsers.length;
       grievance.isUpVoted = 'no';
       if (req.auth.credentials._id.equals(grievance.reportedUser)) {
