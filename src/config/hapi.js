@@ -2,9 +2,9 @@
  * # Hapi.js
  *
  * This is a configuration for Hapi
- * 
- * Note that Hapi is configuration over coding 
- * 
+ *
+ * Note that Hapi is configuration over coding
+ *
  * There's no coding here!!
  */
 'use strict';
@@ -18,6 +18,8 @@ var Hapi = require('hapi'),
     JwtAuth = require('../auth/jwt-strategy'),
     // kind of like underscore, but specific to Hapi
     Hoek = require('hoek'),
+    //path
+    path = require('path'),
     // some additional services
     Plugins = require('./plugins'),
     // the routes we'll support
@@ -27,8 +29,16 @@ var Hapi = require('hapi'),
 
 var internals = {};
 
-//The real Hapi server! 
-internals.server = new Hapi.Server();
+//The real Hapi server!
+internals.server = new Hapi.Server({
+  connections: {
+    routes: {
+      files: {
+        relativeTo: path.join(__dirname, 'public')
+      }
+    }
+  }
+});
 
 //Setup the connection for the environment
 internals.server.connection({

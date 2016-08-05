@@ -23,6 +23,9 @@ internals.plugins = function () {
       options: {}
     },
     {
+      register: require('inert')
+    },
+    {
 
       register: require('good'),
       options: {

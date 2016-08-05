@@ -41,6 +41,10 @@ internals.endpoints = [
       tags: ['api'],
       description: 'Report Grievance',
       notes: 'The User report grievance, the email will be sent to resolving authority',
+      payload:{
+        maxBytes: 209715200,
+        parse: true
+      },
       validate: {
       	payload: {
           //location is required to identify the location
@@ -49,7 +53,13 @@ internals.endpoints = [
       	  tag: Joi.string().required(),
           address: Joi.string(),
           description: Joi.string(),
-          reportedUser: Joi.string().default(CONFIG.anonymous.id)
+          reportedUser: Joi.string().default(CONFIG.anonymous.id),
+          curlyUrl: Joi.any({
+            uri: Joi.string()
+          })
+          .meta({ swaggerType: 'file' })
+          .allow(null)
+          .description('Image File')
       	}
       }
     }
@@ -121,6 +131,29 @@ internals.endpoints = [
         params: {
           _id: Joi.string().required()
         },
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      }
+    }
+  },
+  {
+    method: 'PUT',
+    path: '/grievance/feedbackreport/{_id}',
+    handler: GrievanceHandlers.feedbackUpdateGrievance,
+    config: {
+      // Include this API in swagger documentation
+      tags: ['api'],
+      description: 'A user can add feedback to grievance',
+      notes: 'User can only say yes',
+      validate: {
+        params: {
+          _id: Joi.string().required()
+        },
+        payload: {
+      	  isUpVoted: Joi.string().required(),
+          user: Joi.string().required() //This will be removed once we fix req.auth.credentials null issue
+      	},
         headers: Joi.object({
           'Authorization': Joi.string()
         }).unknown()
