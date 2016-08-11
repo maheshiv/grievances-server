@@ -13,6 +13,7 @@
 var Mongoose = require('mongoose'),
   _ = require('lodash'),
   config = require('../../config'),
+  moment = require('moment'),
   //The document structure definition
   Schema = Mongoose.Schema;
 
@@ -22,7 +23,9 @@ var GrievanceSchema = new Schema({
   location: {type: [Number], index: '2dsphere', required: true},
   reportedUser: {type: Schema.ObjectId, ref: 'User'}, //Either anonymous-id or user-id
   description: String,
-  dateOfReporting: { type: Date, default: Date.now },
+  dateOfReporting: { type: Date, default: Date.now, get: function(date) {
+    return moment(date).format('YYYY-MM-DD hh:mm:ss');
+  }},
   dateOfResolving: Date,
   resolvedUser: { type: Schema.ObjectId, ref: 'User' },
   status: {type: String, default: 'new'},
@@ -34,10 +37,12 @@ var GrievanceSchema = new Schema({
   curlyUrl: String
 }, {
   toObject: {
-    virtuals: true
+    virtuals: true,
+    getters: true
   },
   toJSON: {
-    virtuals: true
+    virtuals: true,
+    getters: true
   }
 });
 

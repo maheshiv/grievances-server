@@ -107,8 +107,12 @@ internals.reportGrievance = function (req, reply) {
          tag: 'Drianage'
        __v: 0 }
        */
-       console.log('check this', grievance);
-      reply(grievance);
+      Grievance.populate(grievance, {path: 'reportedUser', select: 'fullname'}, function(err, grievance) {
+        if (err) {
+          return reply(Boom.conflict(err));
+        }
+        reply(grievance);
+      });
     }
   });
 };
@@ -137,7 +141,7 @@ internals.getMyGrievance = function (req, reply) {
 internals.getAllGrievancesForUser = function (req, reply) {
   Grievance.find({
     location: {$geoWithin: {$center: [req.query.location, req.query.radius]}}
-  }).exec(function(err, grievances) {
+  }).populate('reportedUser', 'fullname').exec(function(err, grievances) {
     if (err) {
       return reply(Boom.badImplementation(err));
     }
@@ -147,7 +151,7 @@ internals.getAllGrievancesForUser = function (req, reply) {
       grievance = grievance.toObject();
       grievance.upVotedCount = grievance.moreReportedUsers.length;
       grievance.isUpVoted = 'no';
-      if (req.auth.credentials._id.equals(grievance.reportedUser)) {
+      if (grievance.reportedUser && req.auth.credentials._id.equals(grievance.reportedUser._id)) {
         delete grievance.moreReportedUsers;
         callback(null, grievance);
       } else {
