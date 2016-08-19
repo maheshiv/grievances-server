@@ -190,6 +190,52 @@ internals.endpoints = [
     }
   },
 
+  {
+    method: 'PUT',
+    path: '/account/syncSocialSites/{_id}',
+    handler: AccountHandlers.syncSocialSites,
+    config: {
+      auth: 'token',
+      tags: ['api'],
+      description: 'sync user\'s social networking sites',
+      notes: 'User is able to link their fbId and gId',
+      validate: {
+        payload: {
+          //email required
+      	  authType: Joi.string().required(),
+                //fullname required
+      	  authUserId: Joi.string().required()
+      	},
+        params: {
+          _id: Joi.string().required()
+        },
+        headers: Joi.object({
+          'Authorization': Joi.string()
+        }).unknown()
+      }
+    }
+  },
+
+  {
+    method: 'POST',
+    path: '/account/loginWithSocial',
+    handler: AccountHandlers.loginWithSocial,
+    config: {
+      tags: ['api'],
+      description: 'User can login with social networking sites facebook, google',
+      notes: 'If User is linked with fb/google id then proceed else create new user',
+      validate: {
+        payload: {
+          //loginType required which will tell facebook or google
+          loginType: Joi.string().required(),
+          //loginId required which will specify facebook/google userId
+          loginId: Joi.string().required(),
+          fullname: Joi.string().required(),
+          email: Joi.string().required()
+      	}
+      }
+    }
+  },
 ];
 
 

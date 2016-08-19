@@ -26,6 +26,6 @@ module.exports = {
   anonymous: {
     id: '576fbea6e0917294920cc0f5' //Create Anonymous user and add Id here
   },
-  uploadUrl: 'http://127.0.0.1:5000/',
+  uploadUrl: 'http://localhost:5000/',
   uploadPath: 'uploads/'
 };

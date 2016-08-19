@@ -111,6 +111,8 @@ internals.reportGrievance = function (req, reply) {
         if (err) {
           return reply(Boom.conflict(err));
         }
+        grievance = grievance.toObject();
+        grievance.upVotedCount = 0;
         reply(grievance);
       });
     }

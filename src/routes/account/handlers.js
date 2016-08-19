@@ -85,12 +85,13 @@ internals.registerUser = function (req, reply) {
  *
  */
 internals.loginUser = function (req, reply) {
+
   User.findOne({ email: req.payload.email }, function (err, user) {
 
     if (err) {
       reply(Boom.unauthorized('Authentication failed'));
     }
-    
+
     if (_.isNull(user)) {
       reply(Boom.unauthorized('Authentication failed'));
     }
@@ -103,6 +104,8 @@ internals.loginUser = function (req, reply) {
         email: user.email,
         objectId: user._id,
         fullname: user.fullname,
+        fbId: user.fbId,
+        gId: user.gId,
         sessionToken: JwtAuth.createToken({
         id: user._id
         })
@@ -262,6 +265,8 @@ internals.getMyProfile = function (req, reply) {
     fullname: req.auth.credentials.fullname,
     email: req.auth.credentials.email,
     emailVerified: req.auth.credentials.emailVerified,
+    fbId: req.auth.credentials.fbId,
+    gId: req.auth.credentials.gId,
     sessionToken: req.headers.authorization.split(' ')[1]
   });
 };
@@ -310,6 +315,116 @@ internals.updateProfile = function (req, reply) {
       });
 
     }
+  });
+};
+
+/**
+ * ## syncSocialSites
+ *
+ * We sync Social networking sites like facebook, google
+ *
+ * note: the user is available from the credentials!
+ */
+internals.syncSocialSites = function (req, reply) {
+  console.log('cool mahesh', req.params._id);
+  User.findById(req.params._id, function(err, user) {
+    if (err) {
+      return reply(Boom.badImplementation(err));
+    }
+
+    //Provide no indication if user exists
+    if (user) {
+      user[req.payload.authType] = req.payload.authUserId;
+      user.save(function(err, updatedUser) {
+        if (err) {
+          return reply(Boom.conflict("User couldn't be saved."));
+        }
+        reply({});
+      });
+
+    }
+  });
+};
+
+/**
+ * ## loginWithSocial
+ *
+ * Find the user by fb/google userId, if not found create the user and return login details,
+ * if email-id found map fb/google userId with email-id
+ *
+ */
+internals.loginWithSocial = function (req, reply) {
+  var whereClause = {
+    email: req.payload.email
+  };
+  switch(req.payload.loginType) {
+    case 'fb':
+      whereClause.fbId = req.payload.loginId;
+      break;
+    case 'g':
+      whereClause.gId = req.payload.loginId;
+      break;
+  }
+
+  User.findOne({ $or: [whereClause] }, function (err, user) {
+    var newuser;
+    if (err) {
+      reply(Boom.unauthorized('Authentication failed'));
+    }
+
+    if (_.isNull(user)) {
+      whereClause.emailVerified = false;
+      whereClause.fullname = req.payload.fullname;
+      newuser = new User(whereClause);
+      //save the user w/ the encrypted password
+      return newuser.save(function (err, user) {
+        if (err) {
+          reply(Boom.conflict(err));
+        } else {
+          var tokenData = {
+            email: user.email,
+            id: user._id
+          };
+          // send an email verification with a JWT token
+          Mailer.sendMailVerificationLink(user,
+                                          JasonWebToken.sign(tokenData,
+                                                             CONFIG.crypto.privateKey));
+
+          /** user:
+           register { _id: 56844c798d4dce65e2b45b6e,
+           emailVerified: false,
+           password: 'd5be02df44dafbbcfb',
+           email: 'barton@acclivyx.com',
+           fullname: 'barton',
+           fbId/googleId: 12345679
+           __v: 0 }
+           */
+          //Let the user know they are registered
+          //Note that the token is created only with the user._id since
+          //the user can change their fullname & email
+          //If the token embeds either of those fields, it becomes
+          //an invalid token once the user changes those fields
+          reply({
+    	       statusCode: 201,
+             objectId: user._id,
+             fbId: user.fbId,
+             gId: user.gId,
+    	       sessionToken: JwtAuth.createToken({ id: user._id})
+          });
+        }
+      });
+    }
+    reply({
+      email: user.email,
+      objectId: user._id,
+      fullname: user.fullname,
+      fbId: user.fbId,
+      gId: user.gId,
+      sessionToken: JwtAuth.createToken({
+      id: user._id
+      })
+    });
+
   });
 };
 

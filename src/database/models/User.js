@@ -27,12 +27,14 @@ var UserSchema = new Schema({
     required: true
   },
   password:{
-    type: String,
-    required: true
+    type: String
   },
   emailVerified: {
-    type: Boolean
+    type: Boolean,
+    default: false
   },
+  fbId: Number,
+  gId: Number,
   role: {
     type: String,
     default: 'reporter'
