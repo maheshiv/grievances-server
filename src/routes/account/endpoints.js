@@ -235,7 +235,7 @@ internals.endpoints = [
       	}
       }
     }
-  },
+  }
 ];
 
 

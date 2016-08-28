@@ -141,8 +141,10 @@ internals.getMyGrievance = function (req, reply) {
  *
  */
 internals.getAllGrievancesForUser = function (req, reply) {
+  var mts = 6378.1*1000,
+    convertToKm = req.query.radius/mts;
   Grievance.find({
-    location: {$geoWithin: {$center: [req.query.location, req.query.radius]}}
+    location: {$geoWithin: {$centerSphere: [req.query.location, convertToKm]}}
   }).populate('reportedUser', 'fullname').exec(function(err, grievances) {
     if (err) {
       return reply(Boom.badImplementation(err));

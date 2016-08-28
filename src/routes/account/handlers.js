@@ -357,14 +357,7 @@ internals.loginWithSocial = function (req, reply) {
   var whereClause = {
     email: req.payload.email
   };
-  switch(req.payload.loginType) {
-    case 'fb':
-      whereClause.fbId = req.payload.loginId;
-      break;
-    case 'g':
-      whereClause.gId = req.payload.loginId;
-      break;
-  }
+  whereClause[req.payload.loginType] = req.payload.loginId;
 
   User.findOne({ $or: [whereClause] }, function (err, user) {
     var newuser;
@@ -406,6 +399,26 @@ internals.loginWithSocial = function (req, reply) {
           //an invalid token once the user changes those fields
           reply({
     	       statusCode: 201,
+             email: user.email,
+             fullname: user.fullname,
+             objectId: user._id,
+             fbId: user.fbId,
+             gId: user.gId,
+    	       sessionToken: JwtAuth.createToken({ id: user._id})
+          });
+        }
+      });
+    }
+    if (!user[req.payload.loginType]) {
+      user[req.payload.loginType] = req.payload.loginId;
+      return user.save(function(err, user) {
+        if (err) {
+          reply(Boom.conflict(err));
+        } else {
+          reply({
+    	       statusCode: 201,
+             email: user.email,
+             fullname: user.fullname,
              objectId: user._id,
              fbId: user.fbId,
              gId: user.gId,
@@ -421,7 +434,7 @@ internals.loginWithSocial = function (req, reply) {
       fbId: user.fbId,
       gId: user.gId,
       sessionToken: JwtAuth.createToken({
-      id: user._id
+        id: user._id
       })
     });
 

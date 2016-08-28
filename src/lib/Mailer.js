@@ -2,7 +2,7 @@
  * # Mailer.js
  *
  * Create email and send content
- * 
+ *
  *
  */
 'use strict';
@@ -28,7 +28,7 @@ var transporter = nodemailer.createTransport({
   }
 });
 /**
- * ## getUrl 
+ * ## getUrl
  * Local or OpenShift
  *
  */
@@ -87,12 +87,12 @@ exports.sendMailResetPassword = function(user, token) {
 /**
  * ## mail
  *
- * The main function, sends the email 
+ * The main function, sends the email
  *
  * @param from who email is from
  * @param email who email is sent to
  * @param subject the subject of the email
- * @param mailbody the body of the email 
+ * @param mailbody the body of the email
  */
 function mail(from, email, subject, mailbody){
   var mailOptions = {
