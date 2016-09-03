@@ -14,7 +14,7 @@ module.exports = {
     tokenExpiry: 1 * 30 * 1000 * 60 //1 hour
   },
   email: {
-    test: false, //If false, it will send email and currently it is moving to spam
+    test: true, //If false, it will send email and currently it is moving to spam
     username: "grievancesmaintainer@gmail.com",
     password: "g050389m",
     accountName: "Mahesh Shivanna"

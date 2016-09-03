@@ -72,7 +72,9 @@ internals.registerUser = function (req, reply) {
       reply({
 	       statusCode: 201,
          objectId: user._id,
-	       sessionToken: JwtAuth.createToken({ id: user._id})
+	       sessionToken: JwtAuth.createToken({ id: user._id}),
+         fullname: user.fullname,
+         email: user.email
       });
     }
   });
