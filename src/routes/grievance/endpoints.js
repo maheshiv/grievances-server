@@ -52,7 +52,7 @@ internals.endpoints = [
           //tag is required to identify the issue
       	  tag: Joi.string().required(),
           address: Joi.string().required(),
-          description: Joi.string(),
+          description: Joi.string().allow(''),
           reportedUser: Joi.string().default(CONFIG.anonymous.id),
           curlyUrl: Joi.any({
             uri: Joi.string()
